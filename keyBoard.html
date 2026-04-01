@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Baboo Play Yard Keyboard</title>
+  <link rel="stylesheet" href="./styles/main.css" />
+</head>
+<body class="keyboard-page">
+  <div class="mouse-trail" id="mouseGlow"></div>
+
+  <div class="app">
+    <div class="top-bar">
+      <div class="brand">Baboo Play Yard</div>
+      <div class="controls">
+        <a class="home-link" href="./index.html">Welcome</a>
+        <button id="fullscreenBtn">Full Screen</button>
+        <button id="soundBtn">Sound: On</button>
+        <button id="rainbowBtn">Rainbow: Off</button>
+        <button id="caseBtn">Mode: UPPER</button>
+        <button id="phonicsBtn">Phonics: Off</button>
+        <button id="darkModeBtn">Dark: Off</button>
+      </div>
+    </div>
+
+    <div class="screen">
+      <section class="display" id="displayArea">
+        <div class="emoji-pop" id="emojiPop">😊</div>
+        <div class="big-letter" id="bigLetter">A</div>
+        <div class="word-line" id="wordLine">A is for Apple 🍎</div>
+      </section>
+    </div>
+
+    <div class="keyboard" id="keyboard"></div>
+    <div class="footer-note">Baboo Play Yard is a single HTML play space for young children and parents.</div>
+  </div>
+
+  <script src="./scripts/keyboard.js"></script>
+</body>
+</html>

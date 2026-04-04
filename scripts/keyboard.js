@@ -72,6 +72,8 @@ const phonicsMap = {
   Y: 'yuh', Z: 'zzz'
 };
 
+const sillySmileys = ['😂', '😆', '🤣', '😁', '😹', '😄'];
+
 function makeKeyboard() {
   rows.forEach(rowLetters => {
     const row = document.createElement('div');
@@ -85,6 +87,15 @@ function makeKeyboard() {
     });
     keyboard.appendChild(row);
   });
+}
+
+function handlePlayableKey(key) {
+  if (letterData[key]) {
+    updateLetter(key);
+    return;
+  }
+
+  triggerFunKeyReaction();
 }
 
 function randomPastel() {
@@ -162,7 +173,13 @@ function playLetterSound(letter) {
   const oscillator = audioCtx.createOscillator();
   const gain = audioCtx.createGain();
   const now = audioCtx.currentTime;
-  const base = 260 + (letter.charCodeAt(0) - 65) * 12;
+  let base = 260;
+
+  if (/^[A-Z]$/.test(letter)) {
+    base = 260 + (letter.charCodeAt(0) - 65) * 12;
+  } else if (/^[0-9]$/.test(letter)) {
+    base = 320 + Number(letter) * 35;
+  }
 
   oscillator.type = 'sine';
   oscillator.frequency.setValueAtTime(base, now);
@@ -178,6 +195,46 @@ function playLetterSound(letter) {
   oscillator.stop(now + 0.28);
 }
 
+function playFunKeySound() {
+  const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  const oscillator = audioCtx.createOscillator();
+  const gain = audioCtx.createGain();
+  const now = audioCtx.currentTime;
+
+  oscillator.type = 'triangle';
+  oscillator.frequency.setValueAtTime(520, now);
+  oscillator.frequency.exponentialRampToValueAtTime(780, now + 0.08);
+  oscillator.frequency.exponentialRampToValueAtTime(420, now + 0.22);
+
+  gain.gain.setValueAtTime(0.0001, now);
+  gain.gain.exponentialRampToValueAtTime(0.18, now + 0.02);
+  gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.32);
+
+  oscillator.connect(gain);
+  gain.connect(audioCtx.destination);
+  oscillator.start(now);
+  oscillator.stop(now + 0.34);
+}
+
+function triggerFunKeyReaction() {
+  const smiley = sillySmileys[Math.floor(Math.random() * sillySmileys.length)];
+  emojiPop.textContent = smiley;
+  emojiPop.style.animation = 'none';
+  requestAnimationFrame(() => {
+    emojiPop.style.animation = 'bounceIn 0.45s ease';
+  });
+
+  spawnFloaters(smiley);
+
+  if (rainbowMode) {
+    displayArea.style.background = darkMode
+      ? `linear-gradient(180deg, #1f2937, ${randomPastel()}33)`
+      : `linear-gradient(180deg, white, ${randomPastel()}22)`;
+  }
+
+  if (soundEnabled) playFunKeySound();
+}
+
 function getDisplayLetter(letter) {
   if (letterMode === 'lower') return letter.toLowerCase();
   if (letterMode === 'both') return `${letter} ${letter.toLowerCase()}`;
@@ -187,9 +244,17 @@ function getDisplayLetter(letter) {
 function speakPhonics(letter, word) {
   if (!('speechSynthesis' in window)) return;
   window.speechSynthesis.cancel();
-  const displayLetter = getDisplayLetter(letter);
-  const phonics = phonicsMap[letter] || letter.toLowerCase();
-  const utterance = new SpeechSynthesisUtterance(`${displayLetter}. ${phonics}. ${letter} is for ${word}`);
+  let phrase = word;
+
+  if (/^[A-Z]$/.test(letter)) {
+    const displayLetter = getDisplayLetter(letter);
+    const phonics = phonicsMap[letter] || letter.toLowerCase();
+    phrase = `${displayLetter}. ${phonics}. ${word}`;
+  } else if (/^[0-9]$/.test(letter)) {
+    phrase = word;
+  }
+
+  const utterance = new SpeechSynthesisUtterance(phrase);
   utterance.rate = 0.82;
   utterance.pitch = 1.18;
   utterance.volume = 1;
@@ -203,7 +268,15 @@ function speakPhonics(letter, word) {
 document.addEventListener('keydown', event => {
   let key = event.key;
   if (/^[a-zA-Z]$/.test(key)) key = key.toUpperCase();
-  if (letterData[key]) updateLetter(key);
+  if (key.length === 1 || key === 'Enter' || key === 'Backspace' || key === 'Tab' || key === ' ') {
+    handlePlayableKey(key);
+  }
+});
+
+keyboard.addEventListener('click', event => {
+  const keyEl = event.target.closest('.key');
+  if (!keyEl) return;
+  handlePlayableKey(keyEl.textContent);
 });
 
 document.addEventListener('mousemove', event => {

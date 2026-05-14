@@ -52,27 +52,20 @@ const soundBtn = document.getElementById('soundBtn');
 const fullscreenBtn = document.getElementById('fullscreenBtn');
 const rainbowBtn = document.getElementById('rainbowBtn');
 const caseBtn = document.getElementById('caseBtn');
-const phonicsBtn = document.getElementById('phonicsBtn');
 const darkModeBtn = document.getElementById('darkModeBtn');
 const mouseGlow = document.getElementById('mouseGlow');
 
 let soundEnabled = true;
 let rainbowMode = false;
-let phonicsEnabled = false;
 let currentLetter = 'A';
 let darkMode = false;
 let letterMode = 'upper';
+let audioCtx;
 
 const rows = ['1234567890', 'QWERTYUIOP', 'ASDFGHJKL', 'ZXCVBNM'];
 
-const phonicsMap = {
-  A: 'aah', B: 'buh', C: 'kuh', D: 'duh', E: 'eh', F: 'fff', G: 'guh', H: 'huh',
-  I: 'ih', J: 'juh', K: 'kuh', L: 'lll', M: 'mmm', N: 'nnn', O: 'oh', P: 'puh',
-  Q: 'kwuh', R: 'rrr', S: 'sss', T: 'tuh', U: 'uh', V: 'vvv', W: 'wuh', X: 'ks',
-  Y: 'yuh', Z: 'zzz'
-};
-
 const sillySmileys = ['😂', '😆', '🤣', '😁', '😹', '😄'];
+const countingEmojis = ['🍎', '⭐', '🌈', '🎈', '🧸', '🍪', '🚗', '⚽'];
 
 function makeKeyboard() {
   rows.forEach(rowLetters => {
@@ -104,13 +97,21 @@ function randomPastel() {
   return `hsl(${hue} 90% 60%)`;
 }
 
+function getNumberEmojiDisplay(numberKey) {
+  const count = Number(numberKey);
+  if (count === 0) return '0 is for no emojis yet';
+
+  const emoji = countingEmojis[Math.floor(Math.random() * countingEmojis.length)];
+  return `${count} is for ${emoji.repeat(count)}`;
+}
+
 function friendlyLower(letter) {
   if (letter === 'A') return 'ɑ';
   if (letter === 'T') return 't';
   return letter.toLowerCase();
 }
 
-function updateLetter(letter) {
+function updateLetter(letter, shouldPlaySound = true) {
   currentLetter = letter;
   const data = letterData[letter];
   if (!data) return;
@@ -123,7 +124,11 @@ function updateLetter(letter) {
   }
 
   bigLetter.textContent = displayLetter;
-  wordLine.textContent = `${displayLetter} is for ${data.word} ${data.emoji}`;
+  if (/^[0-9]$/.test(letter)) {
+    wordLine.textContent = getNumberEmojiDisplay(letter);
+  } else {
+    wordLine.textContent = `${displayLetter} is for ${data.word} ${data.emoji}`;
+  }
   emojiPop.textContent = data.emoji;
   emojiPop.style.animation = 'none';
   requestAnimationFrame(() => {
@@ -142,8 +147,7 @@ function updateLetter(letter) {
 
   highlightKey(letter);
   spawnFloaters(data.emoji);
-  if (soundEnabled) playLetterSound(letter);
-  if (phonicsEnabled) speakPhonics(letter, data.word);
+  if (soundEnabled && shouldPlaySound) playLetterSound(letter);
 }
 
 function highlightKey(letter) {
@@ -168,11 +172,47 @@ function spawnFloaters(symbol) {
   }
 }
 
+function getAudioContext() {
+  if (!audioCtx) {
+    const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+    audioCtx = new AudioContextClass();
+  }
+
+  return audioCtx;
+}
+
+function playTone({ type, startFrequency, peakFrequency, endFrequency, duration, volume }) {
+  const context = getAudioContext();
+
+  const scheduleTone = () => {
+    const oscillator = context.createOscillator();
+    const gain = context.createGain();
+    const now = context.currentTime;
+
+    oscillator.type = type;
+    oscillator.frequency.setValueAtTime(startFrequency, now);
+    oscillator.frequency.exponentialRampToValueAtTime(peakFrequency, now + duration * 0.45);
+    oscillator.frequency.exponentialRampToValueAtTime(endFrequency, now + duration * 0.85);
+
+    gain.gain.setValueAtTime(0.0001, now);
+    gain.gain.exponentialRampToValueAtTime(volume, now + 0.02);
+    gain.gain.exponentialRampToValueAtTime(0.0001, now + duration);
+
+    oscillator.connect(gain);
+    gain.connect(context.destination);
+    oscillator.start(now);
+    oscillator.stop(now + duration + 0.02);
+  };
+
+  if (context.state === 'suspended') {
+    context.resume().then(scheduleTone).catch(() => {});
+    return;
+  }
+
+  scheduleTone();
+}
+
 function playLetterSound(letter) {
-  const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-  const oscillator = audioCtx.createOscillator();
-  const gain = audioCtx.createGain();
-  const now = audioCtx.currentTime;
   let base = 260;
 
   if (/^[A-Z]$/.test(letter)) {
@@ -181,39 +221,25 @@ function playLetterSound(letter) {
     base = 320 + Number(letter) * 35;
   }
 
-  oscillator.type = 'sine';
-  oscillator.frequency.setValueAtTime(base, now);
-  oscillator.frequency.exponentialRampToValueAtTime(base * 1.25, now + 0.12);
-
-  gain.gain.setValueAtTime(0.0001, now);
-  gain.gain.exponentialRampToValueAtTime(0.15, now + 0.02);
-  gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.26);
-
-  oscillator.connect(gain);
-  gain.connect(audioCtx.destination);
-  oscillator.start(now);
-  oscillator.stop(now + 0.28);
+  playTone({
+    type: 'sine',
+    startFrequency: base,
+    peakFrequency: base * 1.25,
+    endFrequency: base * 1.12,
+    duration: 0.28,
+    volume: 0.15
+  });
 }
 
 function playFunKeySound() {
-  const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-  const oscillator = audioCtx.createOscillator();
-  const gain = audioCtx.createGain();
-  const now = audioCtx.currentTime;
-
-  oscillator.type = 'triangle';
-  oscillator.frequency.setValueAtTime(520, now);
-  oscillator.frequency.exponentialRampToValueAtTime(780, now + 0.08);
-  oscillator.frequency.exponentialRampToValueAtTime(420, now + 0.22);
-
-  gain.gain.setValueAtTime(0.0001, now);
-  gain.gain.exponentialRampToValueAtTime(0.18, now + 0.02);
-  gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.32);
-
-  oscillator.connect(gain);
-  gain.connect(audioCtx.destination);
-  oscillator.start(now);
-  oscillator.stop(now + 0.34);
+  playTone({
+    type: 'triangle',
+    startFrequency: 520,
+    peakFrequency: 780,
+    endFrequency: 420,
+    duration: 0.34,
+    volume: 0.18
+  });
 }
 
 function triggerFunKeyReaction() {
@@ -233,36 +259,6 @@ function triggerFunKeyReaction() {
   }
 
   if (soundEnabled) playFunKeySound();
-}
-
-function getDisplayLetter(letter) {
-  if (letterMode === 'lower') return letter.toLowerCase();
-  if (letterMode === 'both') return `${letter} ${letter.toLowerCase()}`;
-  return letter;
-}
-
-function speakPhonics(letter, word) {
-  if (!('speechSynthesis' in window)) return;
-  window.speechSynthesis.cancel();
-  let phrase = word;
-
-  if (/^[A-Z]$/.test(letter)) {
-    const displayLetter = getDisplayLetter(letter);
-    const phonics = phonicsMap[letter] || letter.toLowerCase();
-    phrase = `${displayLetter}. ${phonics}. ${word}`;
-  } else if (/^[0-9]$/.test(letter)) {
-    phrase = word;
-  }
-
-  const utterance = new SpeechSynthesisUtterance(phrase);
-  utterance.rate = 0.82;
-  utterance.pitch = 1.18;
-  utterance.volume = 1;
-  const voices = window.speechSynthesis.getVoices();
-  const preferredVoice = voices.find(voice => /en/i.test(voice.lang) && /child|female|samantha|zira|google uk english female|aria/i.test(voice.name))
-    || voices.find(voice => /en/i.test(voice.lang));
-  if (preferredVoice) utterance.voice = preferredVoice;
-  window.speechSynthesis.speak(utterance);
 }
 
 document.addEventListener('keydown', event => {
@@ -298,6 +294,11 @@ async function goFullscreen() {
     if (!document.fullscreenElement) {
       await el.requestFullscreen();
       document.body.classList.add('fullscreen-mode');
+      fullscreenBtn.textContent = 'Exit Full Screen';
+    } else {
+      await document.exitFullscreen();
+      document.body.classList.remove('fullscreen-mode');
+      fullscreenBtn.textContent = 'Full Screen';
     }
   } catch (error) {
     console.log('Fullscreen not available', error);
@@ -309,6 +310,7 @@ fullscreenBtn.addEventListener('click', goFullscreen);
 soundBtn.addEventListener('click', () => {
   soundEnabled = !soundEnabled;
   soundBtn.textContent = `Sound: ${soundEnabled ? 'On' : 'Off'}`;
+  if (soundEnabled) getAudioContext().resume().catch(() => {});
 });
 
 rainbowBtn.addEventListener('click', () => {
@@ -337,17 +339,6 @@ caseBtn.addEventListener('click', () => {
   updateLetter(currentLetter);
 });
 
-phonicsBtn.addEventListener('click', () => {
-  phonicsEnabled = !phonicsEnabled;
-  phonicsBtn.textContent = `Phonics: ${phonicsEnabled ? 'On' : 'Off'}`;
-  if (phonicsEnabled) {
-    const data = letterData[currentLetter];
-    if (data) speakPhonics(currentLetter, data.word);
-  } else if ('speechSynthesis' in window) {
-    window.speechSynthesis.cancel();
-  }
-});
-
 darkModeBtn.addEventListener('click', () => {
   darkMode = !darkMode;
   document.body.classList.toggle('dark-mode', darkMode);
@@ -358,14 +349,13 @@ darkModeBtn.addEventListener('click', () => {
 document.addEventListener('fullscreenchange', () => {
   if (!document.fullscreenElement) {
     document.body.classList.remove('fullscreen-mode');
+    fullscreenBtn.textContent = 'Full Screen';
+  } else {
+    document.body.classList.add('fullscreen-mode');
+    fullscreenBtn.textContent = 'Exit Full Screen';
   }
 });
 
-if ('speechSynthesis' in window) {
-  window.speechSynthesis.getVoices();
-  window.speechSynthesis.onvoiceschanged = () => window.speechSynthesis.getVoices();
-}
-
 makeKeyboard();
-updateLetter('A');
+updateLetter('A', false);
 goFullscreen();

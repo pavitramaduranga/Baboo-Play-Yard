@@ -65,7 +65,13 @@ let audioCtx;
 const rows = ['1234567890', 'QWERTYUIOP', 'ASDFGHJKL', 'ZXCVBNM'];
 
 const sillySmileys = ['😂', '😆', '🤣', '😁', '😹', '😄'];
-const countingEmojis = ['🍎', '⭐', '🌈', '🎈', '🧸', '🍪', '🚗', '⚽'];
+const countingEmojis = [
+  { name: 'star', emoji: '⭐' },
+  { name: 'ball', emoji: '⚽' },
+  { name: 'balloon', emoji: '🎈' },
+  { name: 'cookie', emoji: '🍪' },
+  { name: 'car', emoji: '🚗' }
+];
 
 function makeKeyboard() {
   rows.forEach(rowLetters => {
@@ -99,10 +105,11 @@ function randomPastel() {
 
 function getNumberEmojiDisplay(numberKey) {
   const count = Number(numberKey);
-  if (count === 0) return '0 is for no emojis yet';
+  if (count === 0) return '0 little things 🫙';
 
-  const emoji = countingEmojis[Math.floor(Math.random() * countingEmojis.length)];
-  return `${count} is for ${emoji.repeat(count)}`;
+  const item = countingEmojis[Math.floor(Math.random() * countingEmojis.length)];
+  const label = count === 1 ? item.name : `${item.name}s`;
+  return `${count} little ${label} ${item.emoji.repeat(count)}`;
 }
 
 function friendlyLower(letter) {

@@ -26,6 +26,7 @@
 ## Phase 4
 
 - [ ] Add newsletter signup: "If you liked this, we have many more you might like."
+- [x] Add a share button or share section so parents can easily share Baboo Play Yard with other families.
 
 ## SEO Analysis: Kids Keyboard Target
 
@@ -36,10 +37,11 @@ Target search intent around a safe, playful keyboard experience for young childr
 ### Current SEO Snapshot
 
 - The home page is currently the best landing page for SEO because `keyBoard.html` redirects direct visitors back to the home page unless they enter through the Start Keyboard Play button.
-- The current home page title is only "Baboo Play Yard", which is good for branding but weak for non-branded discovery.
-- The site is missing meta descriptions, canonical URLs, Open Graph tags, Twitter card tags, robots guidance, sitemap, and structured data.
-- The home page explains the product, but it does not use the main target phrase "kids keyboard" clearly enough in the title, H1/supporting copy, and page content.
-- The keyboard page title says "Baboo Play Yard Keyboard", but because of the direct-entry redirect, it should not be treated as the main SEO landing page unless the gate strategy changes.
+- The home page now includes a keyword-focused title, meta description, Open Graph tags, Twitter card tags, structured data, and visible kids keyboard content.
+- The gated keyboard page has `noindex`, so `index.html` remains the main page for "kids keyboard" discovery.
+- The coloring pages page now has basic metadata and `noindex` while it is a coming-soon page.
+- The site now has a visible footer and parent-focused FAQ content on the home page.
+- Canonical URLs, `og:url`, and sitemap entries are still waiting on the final production domain.
 - The site is very lightweight, which is good for performance, but external Google Fonts may still affect load timing. Performance should be tested after deployment.
 - The current file name `keyBoard.html` is less SEO-friendly than a descriptive lowercase URL like `kids-keyboard.html`, but changing it requires updating links and the direct-entry guard.
 
@@ -58,9 +60,10 @@ Target search intent around a safe, playful keyboard experience for young childr
 
 - [ ] Rename `keyBoard.html` to a cleaner lowercase URL such as `kids-keyboard.html` or `keyboard-play.html`.
 - [ ] Rename `coloringPages.html` to `coloring-pages.html` for consistency and readability.
-- [ ] Add `robots.txt` and `sitemap.xml` after the final domain is selected.
-- [ ] Add a visible page footer with simple internal links: Keyboard Play, Coloring Pages, Baboo Stories, Privacy.
-- [ ] Add a small FAQ section targeting parent search intent, such as safety, age range, sound, fullscreen, and whether it works offline.
+- [x] Add `robots.txt`.
+- [ ] Add `sitemap.xml` after the final domain is selected.
+- [x] Add a visible page footer with simple internal links: Keyboard Play, Coloring Pages, Baboo Stories.
+- [x] Add a small FAQ section targeting parent search intent, such as safety, age range, sound, fullscreen, and whether it works offline.
 - [ ] Add screenshots or preview images for richer sharing and future app-store style presentation.
 - [ ] Consider self-hosting fonts or using font-display best practices to improve loading experience.
 
@@ -76,13 +79,14 @@ Target search intent around a safe, playful keyboard experience for young childr
   - Can parents turn sound off?
   - Can children click the on-screen keyboard?
   - Is it free to use?
+  Status: added to the home page.
 
 ### Technical SEO Suggestions
 
 - Add a unique title and meta description to every HTML page.
 - Add one clear H1 per page and keep headings in logical order.
 - Add canonical URLs once the production domain is known.
-- Add `robots.txt` and `sitemap.xml` for deployment.
+- Add `robots.txt` and `sitemap.xml` for deployment. Status: `robots.txt` added; `sitemap.xml` is waiting on the production domain.
 - Add social preview metadata using `og:title`, `og:description`, `og:type`, and `og:url`.
 - Add structured data only for content that is visible and accurate.
 - Keep Core Web Vitals strong: aim for fast loading, low layout shift, and responsive interactions.

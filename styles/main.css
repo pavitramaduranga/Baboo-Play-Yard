@@ -270,6 +270,12 @@ body {
   z-index: 1;
 }
 
+.mobile-parent-note {
+  display: none;
+  position: relative;
+  z-index: 1;
+}
+
 .cta,
 button,
 .home-link,
@@ -607,5 +613,31 @@ button:active,
   .info-grid,
   .faq-grid {
     grid-template-columns: 1fr;
+  }
+
+  .mobile-parent-note {
+    display: block;
+    max-width: 620px;
+    margin: -12px 0 28px;
+    padding: 18px 20px;
+    border: 2px solid rgba(255, 194, 87, 0.45);
+    border-radius: 24px;
+    background:
+      radial-gradient(circle at 20% 20%, rgba(255, 226, 122, 0.36), transparent 34%),
+      rgba(255, 255, 255, 0.82);
+    box-shadow: 0 16px 32px rgba(37, 50, 74, 0.12);
+    line-height: 1.5;
+  }
+
+  .mobile-parent-note strong {
+    display: block;
+    margin-bottom: 6px;
+    font-size: 18px;
+  }
+
+  .mobile-parent-note span {
+    display: block;
+    color: var(--muted);
+    font-size: 16px;
   }
 }

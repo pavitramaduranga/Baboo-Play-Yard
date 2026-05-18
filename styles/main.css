@@ -260,6 +260,25 @@ body {
   line-height: 1.55;
 }
 
+.support-points {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 2px 0 18px;
+  padding: 0;
+  list-style: none;
+}
+
+.support-points li {
+  padding: 9px 12px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.72);
+  box-shadow: 0 10px 20px rgba(37, 50, 74, 0.08);
+  color: var(--muted);
+  font-size: 14px;
+  font-weight: 800;
+}
+
 .actions {
   display: flex;
   gap: 14px;

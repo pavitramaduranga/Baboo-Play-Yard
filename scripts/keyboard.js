@@ -188,13 +188,25 @@ function getAudioContext() {
   return audioCtx;
 }
 
-function playTone({ type, startFrequency, peakFrequency, endFrequency, duration, volume }) {
+function pickRandom(items) {
+  return items[Math.floor(Math.random() * items.length)];
+}
+
+function playTone({
+  type,
+  startFrequency,
+  peakFrequency,
+  endFrequency,
+  duration,
+  volume,
+  delay = 0
+}) {
   const context = getAudioContext();
 
   const scheduleTone = () => {
     const oscillator = context.createOscillator();
     const gain = context.createGain();
-    const now = context.currentTime;
+    const now = context.currentTime + delay;
 
     oscillator.type = type;
     oscillator.frequency.setValueAtTime(startFrequency, now);
@@ -228,25 +240,103 @@ function playLetterSound(letter) {
     base = 320 + Number(letter) * 35;
   }
 
-  playTone({
-    type: 'sine',
-    startFrequency: base,
-    peakFrequency: base * 1.25,
-    endFrequency: base * 1.12,
-    duration: 0.28,
-    volume: 0.15
-  });
+  const sound = pickRandom([
+    () => playTone({
+      type: 'sine',
+      startFrequency: base,
+      peakFrequency: base * 1.3,
+      endFrequency: base * 1.12,
+      duration: 0.26,
+      volume: 0.14
+    }),
+    () => playTone({
+      type: 'triangle',
+      startFrequency: base * 1.15,
+      peakFrequency: base * 1.7,
+      endFrequency: base * 1.32,
+      duration: 0.2,
+      volume: 0.13
+    }),
+    () => {
+      playTone({
+        type: 'sine',
+        startFrequency: base,
+        peakFrequency: base * 1.22,
+        endFrequency: base * 1.08,
+        duration: 0.16,
+        volume: 0.12
+      });
+      playTone({
+        type: 'triangle',
+        startFrequency: base * 1.5,
+        peakFrequency: base * 1.75,
+        endFrequency: base * 1.62,
+        duration: 0.18,
+        volume: 0.08,
+        delay: 0.08
+      });
+    },
+    () => playTone({
+      type: 'square',
+      startFrequency: base * 0.86,
+      peakFrequency: base * 1.08,
+      endFrequency: base * 0.94,
+      duration: 0.14,
+      volume: 0.07
+    })
+  ]);
+
+  sound();
 }
 
 function playFunKeySound() {
-  playTone({
-    type: 'triangle',
-    startFrequency: 520,
-    peakFrequency: 780,
-    endFrequency: 420,
-    duration: 0.34,
-    volume: 0.18
-  });
+  const sound = pickRandom([
+    () => playTone({
+      type: 'triangle',
+      startFrequency: 520,
+      peakFrequency: 780,
+      endFrequency: 420,
+      duration: 0.34,
+      volume: 0.16
+    }),
+    () => {
+      playTone({
+        type: 'sine',
+        startFrequency: 660,
+        peakFrequency: 940,
+        endFrequency: 580,
+        duration: 0.16,
+        volume: 0.12
+      });
+      playTone({
+        type: 'sine',
+        startFrequency: 440,
+        peakFrequency: 720,
+        endFrequency: 380,
+        duration: 0.18,
+        volume: 0.1,
+        delay: 0.09
+      });
+    },
+    () => playTone({
+      type: 'sawtooth',
+      startFrequency: 360,
+      peakFrequency: 900,
+      endFrequency: 300,
+      duration: 0.22,
+      volume: 0.08
+    }),
+    () => playTone({
+      type: 'square',
+      startFrequency: 240,
+      peakFrequency: 520,
+      endFrequency: 280,
+      duration: 0.18,
+      volume: 0.07
+    })
+  ]);
+
+  sound();
 }
 
 function triggerFunKeyReaction() {

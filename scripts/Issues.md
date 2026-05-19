@@ -13,7 +13,7 @@
 ## Phase 2
 
 - [ ] Get a domain.
-- [ ] Host the site.
+- [x] Host the site.
 - [ ] Set up Buy Me a Coffee.
 - [ ] Set up analytics.
 

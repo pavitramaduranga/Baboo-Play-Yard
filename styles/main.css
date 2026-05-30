@@ -568,27 +568,27 @@ button:active,
   position: fixed;
   left: 0;
   top: 0;
-  width: 22px;
-  height: 22px;
+  width: 30px;
+  height: 30px;
   border-radius: 50%;
   background: radial-gradient(circle at 35% 35%, #fff, #ffd54f 40%, #ff8a65 70%);
   pointer-events: none;
   transform: translate(-50%, -50%);
   opacity: 0;
   z-index: 10;
-  box-shadow: 0 0 16px rgba(255, 138, 101, 0.45);
+  box-shadow: 0 0 24px rgba(255, 138, 101, 0.5);
 }
 
 .trail-dot {
   position: fixed;
-  width: 14px;
-  height: 14px;
+  width: 20px;
+  height: 20px;
   border-radius: 50%;
   pointer-events: none;
-  background: var(--trail-bg);
+  background: radial-gradient(circle, var(--trail-bg) 0 42%, rgba(255, 213, 79, 0.32) 72%);
   transform: translate(-50%, -50%);
   z-index: 9;
-  animation: fadeTrail 0.55s linear forwards;
+  animation: fadeTrail 0.85s ease-out forwards;
 }
 
 .footer-note {
@@ -614,7 +614,7 @@ button:active,
 
 @keyframes fadeTrail {
   from { opacity: 1; }
-  to { opacity: 0; transform: translate(-50%, -50%) scale(0.3); }
+  to { opacity: 0; transform: translate(-50%, -50%) scale(0.45); }
 }
 
 @media (max-width: 900px) {

@@ -5,29 +5,104 @@ if (sessionStorage.getItem('babooPlayYardEntry') !== 'allowed') {
 sessionStorage.removeItem('babooPlayYardEntry');
 
 const letterData = {
-  A: { word: 'Apple', emoji: '🍎' },
-  B: { word: 'Ball', emoji: '⚽' },
-  C: { word: 'Cat', emoji: '🐱' },
-  D: { word: 'Dog', emoji: '🐶' },
-  E: { word: 'Elephant', emoji: '🐘' },
-  F: { word: 'Fish', emoji: '🐟' },
-  G: { word: 'Grapes', emoji: '🍇' },
-  H: { word: 'Heart', emoji: '💖' },
-  I: { word: 'Ice Cream', emoji: '🍦' },
-  J: { word: 'Juice', emoji: '🧃' },
-  K: { word: 'Kite', emoji: '🪁' },
-  L: { word: 'Lion', emoji: '🦁' },
-  M: { word: 'Monkey', emoji: '🐵' },
+  A: [
+    { word: 'Apple', emoji: '🍎' },
+    { word: 'Ant', emoji: '🐜' },
+    { word: 'Airplane', emoji: '✈️' }
+  ],
+  B: [
+    { word: 'Ball', emoji: '⚽' },
+    { word: 'Bear', emoji: '🐻' },
+    { word: 'Banana', emoji: '🍌' },
+    { word: 'Balloon', emoji: '🎈' }
+  ],
+  C: [
+    { word: 'Cat', emoji: '🐱' },
+    { word: 'Car', emoji: '🚗' },
+    { word: 'Cookie', emoji: '🍪' },
+    { word: 'Cow', emoji: '🐮' }
+  ],
+  D: [
+    { word: 'Dog', emoji: '🐶' },
+    { word: 'Duck', emoji: '🦆' },
+    { word: 'Dolphin', emoji: '🐬' }
+  ],
+  E: [
+    { word: 'Elephant', emoji: '🐘' },
+    { word: 'Egg', emoji: '🥚' }
+  ],
+  F: [
+    { word: 'Fish', emoji: '🐟' },
+    { word: 'Frog', emoji: '🐸' },
+    { word: 'Flower', emoji: '🌸' },
+    { word: 'Firetruck', emoji: '🚒' }
+  ],
+  G: [
+    { word: 'Grapes', emoji: '🍇' },
+    { word: 'Goat', emoji: '🐐' },
+    { word: 'Gift', emoji: '🎁' }
+  ],
+  H: [
+    { word: 'Heart', emoji: '💖' },
+    { word: 'Horse', emoji: '🐴' },
+    { word: 'House', emoji: '🏠' }
+  ],
+  I: [
+    { word: 'Ice Cream', emoji: '🍦' },
+    { word: 'Island', emoji: '🏝️' }
+  ],
+  J: [
+    { word: 'Juice', emoji: '🧃' },
+    { word: 'Jellyfish', emoji: '🪼' }
+  ],
+  K: [
+    { word: 'Kite', emoji: '🪁' },
+    { word: 'Koala', emoji: '🐨' },
+    { word: 'Key', emoji: '🔑' }
+  ],
+  L: [
+    { word: 'Lion', emoji: '🦁' },
+    { word: 'Lemon', emoji: '🍋' },
+    { word: 'Leaf', emoji: '🍃' }
+  ],
+  M: [
+    { word: 'Monkey', emoji: '🐵' },
+    { word: 'Moon', emoji: '🌙' },
+    { word: 'Mouse', emoji: '🐭' }
+  ],
   N: { word: 'Nest', emoji: '🪺' },
   O: { word: 'Orange', emoji: '🍊' },
-  P: { word: 'Penguin', emoji: '🐧' },
-  Q: { word: 'Queen', emoji: '👑' },
-  R: { word: 'Rainbow', emoji: '🌈' },
-  S: { word: 'Sun', emoji: '☀️' },
-  T: { word: 'Tiger', emoji: '🐯' },
-  U: { word: 'Umbrella', emoji: '☂️' },
+  P: [
+    { word: 'Penguin', emoji: '🐧' },
+    { word: 'Pizza', emoji: '🍕' },
+    { word: 'Puppy', emoji: '🐶' }
+  ],
+  Q: { word: 'Queen', emoji: '👸' },
+  R: [
+    { word: 'Rainbow', emoji: '🌈' },
+    { word: 'Rabbit', emoji: '🐰' },
+    { word: 'Robot', emoji: '🤖' }
+  ],
+  S: [
+    { word: 'Sun', emoji: '☀️' },
+    { word: 'Star', emoji: '⭐' },
+    { word: 'Strawberry', emoji: '🍓' }
+  ],
+  T: [
+    { word: 'Tiger', emoji: '🐯' },
+    { word: 'Turtle', emoji: '🐢' },
+    { word: 'Train', emoji: '🚂' }
+  ],
+  U: [
+    { word: 'Umbrella', emoji: '☂️' },
+    { word: 'Unicorn', emoji: '🦄' }
+  ],
   V: { word: 'Violin', emoji: '🎻' },
-  W: { word: 'Whale', emoji: '🐋' },
+  W: [
+    { word: 'Whale', emoji: '🐋' },
+    { word: 'Watermelon', emoji: '🍉' },
+    { word: 'Worm', emoji: '🪱' }
+  ],
   X: { word: 'Xylophone', emoji: '🎼' },
   Y: { word: 'Yarn', emoji: '🧶' },
   Z: { word: 'Zebra', emoji: '🦓' },
@@ -121,9 +196,16 @@ function friendlyLower(letter) {
   return letter.toLowerCase();
 }
 
-function updateLetter(letter, shouldPlaySound = true) {
+function getLetterExample(letter, useDefault = false) {
+  const examples = letterData[letter];
+  if (!examples) return null;
+  if (!Array.isArray(examples)) return examples;
+  return useDefault ? examples[0] : pickRandom(examples);
+}
+
+function updateLetter(letter, shouldPlaySound = true, useDefaultExample = false) {
   currentLetter = letter;
-  const data = letterData[letter];
+  const data = getLetterExample(letter, useDefaultExample);
   if (!data) return;
 
   let displayLetter = letter;
@@ -385,7 +467,7 @@ document.addEventListener('mousemove', event => {
   dot.style.left = `${event.clientX}px`;
   dot.style.top = `${event.clientY}px`;
   document.body.appendChild(dot);
-  setTimeout(() => dot.remove(), 550);
+  setTimeout(() => dot.remove(), 850);
 });
 
 async function goFullscreen() {
@@ -472,4 +554,4 @@ document.addEventListener('fullscreenchange', () => {
 });
 
 makeKeyboard();
-updateLetter('A', false);
+updateLetter('A', false, true);

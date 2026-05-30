@@ -477,7 +477,7 @@ async function goFullscreen() {
     } else {
       await document.exitFullscreen();
       document.body.classList.remove('fullscreen-mode');
-      fullscreenBtn.textContent = 'Full Screen';
+      fullscreenBtn.textContent = '⛶ Full Screen';
     }
   } catch (error) {
     console.log('Fullscreen not available', error);
@@ -490,7 +490,7 @@ async function enterFullscreen() {
   try {
     await document.documentElement.requestFullscreen();
     document.body.classList.add('fullscreen-mode');
-    fullscreenBtn.textContent = 'Exit Full Screen';
+    fullscreenBtn.textContent = '↙ Exit Full Screen';
   } catch (error) {
     console.log('Fullscreen not available', error);
   }
@@ -506,13 +506,13 @@ fullscreenBtn.addEventListener('click', goFullscreen);
 
 soundBtn.addEventListener('click', () => {
   soundEnabled = !soundEnabled;
-  soundBtn.textContent = `Sound: ${soundEnabled ? 'On' : 'Off'}`;
+  soundBtn.textContent = `${soundEnabled ? '🔊' : '🔇'} Sound: ${soundEnabled ? 'On' : 'Off'}`;
   if (soundEnabled) getAudioContext().resume().catch(() => {});
 });
 
 rainbowBtn.addEventListener('click', () => {
   rainbowMode = !rainbowMode;
-  rainbowBtn.textContent = `Rainbow: ${rainbowMode ? 'On' : 'Off'}`;
+  rainbowBtn.textContent = `🌈 Rainbow: ${rainbowMode ? 'On' : 'Off'}`;
   if (!rainbowMode) {
     bigLetter.style.color = '';
     displayArea.style.background = '';
@@ -524,13 +524,13 @@ rainbowBtn.addEventListener('click', () => {
 caseBtn.addEventListener('click', () => {
   if (letterMode === 'upper') {
     letterMode = 'lower';
-    caseBtn.textContent = 'Mode: lower';
+    caseBtn.textContent = 'a Small Letters';
   } else if (letterMode === 'lower') {
     letterMode = 'both';
-    caseBtn.textContent = 'Mode: Aa';
+    caseBtn.textContent = 'Aa Big & Small';
   } else {
     letterMode = 'upper';
-    caseBtn.textContent = 'Mode: UPPER';
+    caseBtn.textContent = 'A Big Letters';
   }
 
   updateLetter(currentLetter);
@@ -539,17 +539,17 @@ caseBtn.addEventListener('click', () => {
 darkModeBtn.addEventListener('click', () => {
   darkMode = !darkMode;
   document.body.classList.toggle('dark-mode', darkMode);
-  darkModeBtn.textContent = `Dark: ${darkMode ? 'On' : 'Off'}`;
+  darkModeBtn.textContent = `🌙 Dark: ${darkMode ? 'On' : 'Off'}`;
   updateLetter(currentLetter);
 });
 
 document.addEventListener('fullscreenchange', () => {
   if (!document.fullscreenElement) {
     document.body.classList.remove('fullscreen-mode');
-    fullscreenBtn.textContent = 'Full Screen';
+    fullscreenBtn.textContent = '⛶ Full Screen';
   } else {
     document.body.classList.add('fullscreen-mode');
-    fullscreenBtn.textContent = 'Exit Full Screen';
+    fullscreenBtn.textContent = '↙ Exit Full Screen';
   }
 });
 

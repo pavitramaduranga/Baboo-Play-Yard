@@ -305,6 +305,7 @@ button,
   min-height: 56px;
   padding: 14px 22px;
   border-radius: 999px;
+  font-family: inherit;
   font-weight: 800;
   font-size: 18px;
   text-decoration: none;

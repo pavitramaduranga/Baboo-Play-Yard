@@ -61,6 +61,7 @@ let currentLetter = 'A';
 let darkMode = false;
 let letterMode = 'upper';
 let audioCtx;
+let hasAskedFullscreenOnPlay = false;
 
 const rows = ['1234567890', 'QWERTYUIOP', 'ASDFGHJKL', 'ZXCVBNM'];
 
@@ -89,6 +90,8 @@ function makeKeyboard() {
 }
 
 function handlePlayableKey(key) {
+  startFullscreenOnFirstPlay();
+
   if (letterData[key]) {
     updateLetter(key);
     return;
@@ -386,12 +389,9 @@ document.addEventListener('mousemove', event => {
 });
 
 async function goFullscreen() {
-  const el = document.documentElement;
   try {
     if (!document.fullscreenElement) {
-      await el.requestFullscreen();
-      document.body.classList.add('fullscreen-mode');
-      fullscreenBtn.textContent = 'Exit Full Screen';
+      await enterFullscreen();
     } else {
       await document.exitFullscreen();
       document.body.classList.remove('fullscreen-mode');
@@ -400,6 +400,24 @@ async function goFullscreen() {
   } catch (error) {
     console.log('Fullscreen not available', error);
   }
+}
+
+async function enterFullscreen() {
+  if (document.fullscreenElement) return;
+
+  try {
+    await document.documentElement.requestFullscreen();
+    document.body.classList.add('fullscreen-mode');
+    fullscreenBtn.textContent = 'Exit Full Screen';
+  } catch (error) {
+    console.log('Fullscreen not available', error);
+  }
+}
+
+function startFullscreenOnFirstPlay() {
+  if (hasAskedFullscreenOnPlay || document.fullscreenElement) return;
+  hasAskedFullscreenOnPlay = true;
+  enterFullscreen();
 }
 
 fullscreenBtn.addEventListener('click', goFullscreen);
@@ -455,4 +473,3 @@ document.addEventListener('fullscreenchange', () => {
 
 makeKeyboard();
 updateLetter('A', false);
-goFullscreen();
